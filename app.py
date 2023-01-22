@@ -36,6 +36,20 @@ def character(id):
     character_serialized = character.serialize()
     return jsonify(character_serialized)
 
+@app.route("/add_character", methods=["POST"])
+def add_character():
+    character = Character()
+    character.name = request.json.get("name")
+    character.hair_color = request.json.get("hair_color")
+    character.birth_year = request.json.get("birth_year")
+
+    db.session.add(character)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "personaje añadido correctamente"
+        }), 200
+
 @app.route("/planets", methods=["GET"])
 def planets():
     planet = Planet.query.all()
@@ -79,7 +93,7 @@ def add_favorite_planet(planet_id):
     favorite = Favorite()
     user_id = request.json.get("user_id")
 
-    found_user = User.query.filter_by(user_id=user_id).first()
+    found_user = Favorite.query.filter_by(user_id=user_id).all()
 
     if found_user is None:
         return jsonify({
@@ -101,7 +115,7 @@ def add_favorite_character(character_id):
     favorite = Favorite()
     user_id = request.json.get("user_id")
 
-    found_user = User.query.filter_by(user_id=user_id).first()
+    found_user = Favorite.query.filter_by(user_id=user_id).all()
 
     if found_user is None:
         return jsonify({
